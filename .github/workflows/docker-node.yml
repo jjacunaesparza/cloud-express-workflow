@@ -48,28 +48,31 @@ jobs:
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
         echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-deploy-to-ecs:
+  deploy-to-ecs:
     runs-on: ubuntu-latest
     environment: development
-    needs: [ build-and-push ]
+    needs: [build-and-push]
     steps:
-    - uses: actions/checkout@v4
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: ${{ secrets.AWS_ROLE }}
-        aws-region: ${{ vars.AWS_REGION }}
-    - name: Set Docker Image
-      uses: aws-actions/amazon-ecs-render-task-definition@v1
-      id: render-task-definition
-      with:
-        task-definition: ".aws/task.json"
-        container-name: ${{ vars.CONTAINER_NAME }}
-        image: ${{ needs.build-and-push.outputs.image }}
-    - name: Deploy to ECS
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      with:
-        task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
-        service: ${{ vars.SERVICE_ECS }}
-        cluster: ${{ vars.CLUSTER_ECS }}
-        wait-for-service-stability: true
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Set Docker Image
+        id: render-task-definition
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ".aws/task.json"
+          container-name: ${{ vars.CONTAINER_NAME }}
+          image: ${{ needs.build-and-push.outputs.image }}
+
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
+          service: ${{ vars.SERVICE_ECS }}
+          cluster: ${{ vars.CLUSTER_ECS }}
+          wait-for-service-stability: true

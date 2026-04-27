@@ -34,12 +34,12 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
       run: docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@v4  # action para configurar las credenciales de AWS
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         aws-region: ${{ vars.AWS_REGION }}
     - name: Login to ECR
-      uses: aws-actions/amazon-ecr-login@v2
+      uses: aws-actions/amazon-ecr-login@v2  # action para iniciar sesión en Amazon ECR
 
 # Comment
 

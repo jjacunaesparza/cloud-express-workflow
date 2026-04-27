@@ -1,9 +1,8 @@
 name: Docker Image Express
 
 on:
-  workflow_dispatch:
-#  push:
-#    branches: [ auth-with-role ]
+  push:
+    branches: [ auth-with-role ]
 
 permissions:
   id-token: write

@@ -29,14 +29,17 @@ jobs:
       image: ${{ steps.docker-ecr.outputs.image }}
     steps:
     - uses: actions/checkout@v4
+    
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         aws-region: ${{ vars.AWS_REGION }}
+    
     - name: Login to ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
+      
     - name: Docker build and push to registry
       id: docker-ecr
       env:
